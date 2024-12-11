@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "test_common.hpp"
 #include "test_preintegration.hpp"
 
 int main(int argc, char **argv)
