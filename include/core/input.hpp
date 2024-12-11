@@ -12,7 +12,7 @@
 #ifndef INPUT_HPP
 #define INPUT_HPP
 
-#include <utils/types.hpp>
+#include <Eigen/Dense>
 
 /**
  * @namespace preintegration
@@ -21,36 +21,30 @@
 namespace preintegration
 {
   /**
-   * @class Input
+   * @class PreintegrationInput
    * @brief Represents the input for preintegration, including IMU measurements and bias random walk.
+   *
+   * @tparam FPType. Floating point type (float, double, long double)
    */
-  class Input
+  template <typename FPType>
+  class PreintegrationInput
   {
-  private:
-    /**
-     * @brief Preintegration of the IMU measurements.
-     */
-    Vec10 w_;
-
-    /**
-     * @brief Bias random walk input.
-     */
-    Vec10 tau_;
-
   public:
-    /// @name Constructors
-    /// @{
+    using Vec3 = Eigen::Vector<FPType, 3>;
+    using Vec10 = Eigen::Vector<FPType, 10>;
+    using Vec20 = Eigen::Vector<FPType, 20>;
+
     /**
      * @brief Default constructor initializing to zero.
      */
-    Input() : w_(), tau_() {}
+    PreintegrationInput() : w_(), tau_() {}
 
     /**
      * @brief Construct input from a 20-dimensional vector.
      *
      * @param u A 20-dimensional vector where the first 10 elements represent w_ and the last 10 represent tau_.
      */
-    Input(const Vec20 &u) : w_(u.head<10>()), tau_(u.tail<10>()) {}
+    PreintegrationInput(const Vec20 &u) : w_(u.template head<10>()), tau_(u.template tail<10>()) {}
 
     /**
      * @brief Construct input from separate w and tau vectors.
@@ -58,7 +52,7 @@ namespace preintegration
      * @param w   Preintegration of the IMU measurements.
      * @param tau Bias random walk input.
      */
-    Input(const Vec10 &w, const Vec10 &tau)
+    PreintegrationInput(const Vec10 &w, const Vec10 &tau)
         : w_(w), tau_(tau) {}
 
     /**
@@ -67,17 +61,14 @@ namespace preintegration
      * @param gyroMeas Gyroscope measurements as a 3-dimensional vector.
      * @param accMeas  Accelerometer measurements as a 3-dimensional vector.
      */
-    Input(const Vec3 &gyroMeas, const Vec3 &accMeas)
+    PreintegrationInput(const Vec3 &gyroMeas, const Vec3 &accMeas)
         : w_(), tau_()
     {
       w_ = Vec10::Zero();
       w_ << gyroMeas, accMeas, Vec3::Zero(), 1;
       tau_ = Vec10::Zero();
     }
-    /// @}
 
-    /// @name Component Accessors
-    /// @{
     /**
      * @brief Get the preintegrated IMU measurements.
      *
@@ -97,14 +88,14 @@ namespace preintegration
      *
      * @return A 3-dimensional vector representing gyroscope measurements.
      */
-    const Vec3 omega() const { return w_.head<3>(); }
+    const Vec3 omega() const { return w_.template head<3>(); }
 
     /**
      * @brief Get the accelerometer measurements from the input.
      *
      * @return A 3-dimensional vector representing accelerometer measurements.
      */
-    const Vec3 acc() const { return w_.segment<3>(3); }
+    const Vec3 acc() const { return w_.template segment<3>(3); }
 
     /**
      * @brief Get the full input vector combining w and tau.
@@ -112,7 +103,17 @@ namespace preintegration
      * @return A 20-dimensional vector concatenating w and tau.
      */
     const Vec20 u() const { return (Vec20() << w_, tau_).finished(); }
-    /// @}
+
+  private:
+    /**
+     * @brief Preintegration of the IMU measurements.
+     */
+    Vec10 w_;
+
+    /**
+     * @brief Bias random walk input.
+     */
+    Vec10 tau_;
   };
 } // namespace preintegration
 

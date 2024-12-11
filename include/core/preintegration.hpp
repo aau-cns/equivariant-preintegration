@@ -13,9 +13,9 @@
 #define PREINTEGRATION_CORE_HPP
 
 #include <memory>
-#include <params.hpp>
-#include <input.hpp>
-#include <state.hpp>
+#include "core/params.hpp"
+#include "core/input.hpp"
+#include "core/state.hpp"
 
 /**
  * @namespace preintegration
@@ -26,33 +26,29 @@ namespace preintegration
   /**
  * @class EquivariantPreintegration
  * @brief It is the main class for equivariant preintegration of IMU measurements [https://arxiv.org/pdf/2411.05548].
+ *
+ * @tparam FPType. Floating point type (float, double, long double)
  */
+  template <typename FPType>
   class EquivariantPreintegration
   {
-  private:
-    std::shared_ptr<Params> p_;
-
-    // Initial bias estimate used for preintegration
-    Vec10 biasHat_;
-
-    // State origin (Identity element)
-    State xi0_;
-
-    // Preintegration from i to j as a Tangent Group element
-    Gal3TG X_;
-
-    // Jacobian of the state with respect to the bias (used for bias update)
-    Mat20 Jxi_;
-
-    // Covariance matrix for the preintegrated measurements
-    Mat20 Cov_;
-
   public:
-    // Default constructor for serialization
-    EquivariantPreintegration() { resetIntegration(); }
-
-    // Virtual destructor for serialization
-    virtual ~EquivariantPreintegration() {}
+    using Scalar = FPType;
+    using Vec3 = Eigen::Vector<FPType, 3>;
+    using Vec10 = Eigen::Vector<FPType, 10>;
+    using Vec20 = Eigen::Vector<FPType, 20>;
+    using Mat3 = Eigen::Matrix<FPType, 3, 3>;
+    using Mat5 = Eigen::Matrix<FPType, 5, 5>;
+    using Mat9 = Eigen::Matrix<FPType, 9, 9>;
+    using Mat10 = Eigen::Matrix<FPType, 10, 10>;
+    using Mat15 = Eigen::Matrix<FPType, 15, 15>;
+    using Mat18 = Eigen::Matrix<FPType, 18, 18>;
+    using Mat20 = Eigen::Matrix<FPType, 20, 20>;
+    using Gal3 = group::Gal3<FPType>;
+    using Gal3TG = group::Tangent<group::Gal3<FPType>>;
+    using State = PreintegrationState<FPType>;
+    using Input = PreintegrationInput<FPType>;
+    using Params = PreintegrationParams<FPType>;
 
     /**
     *  @brief Constructor, initializes the variables in the base class
@@ -60,7 +56,7 @@ namespace preintegration
     *  @param bias Current estimate of acceleration and rotation rate biases
     */
     EquivariantPreintegration(const std::shared_ptr<Params> &p,
-                              const Vec10 &biasHat = Vec10(),
+                              const Vec10 &biasHat = Vec10::Zero(),
                               const State &xi0 = State())
         : p_(p), biasHat_(biasHat), xi0_(xi0)
     {
@@ -68,7 +64,7 @@ namespace preintegration
     };
 
     // Re-initialize PreintegratedMeasurements
-    void resetIntegration(Mat20 initCov = Mat20::Zero())
+    void resetIntegration()
     {
       State xi_init = State(Gal3(), biasHat_);
       X_ = phi_inv(xi0_, xi_init);
@@ -113,43 +109,43 @@ namespace preintegration
     const Mat3 deltaRij() const { return xi().Upsilon().R(); }
     const Vec3 deltaVij() const { return xi().Upsilon().v(); }
     const Vec3 deltaPij() const { return xi().Upsilon().p(); }
-    const double deltaTij() const { return xi().Upsilon().s(); }
+    const FPType deltaTij() const { return xi().Upsilon().s(); }
 
-    const Mat10 Jb() const { return Jxi_.topRightCorner<10, 10>(); }
-    const Mat9 CovNav() const { return Cov_.topLeftCorner<9, 9>(); }
+    const Mat10 Jb() const { return Jxi_.template topRightCorner<10, 10>(); }
+    const Mat9 CovNav() const { return Cov_.template topLeftCorner<9, 9>(); }
     const Mat15 Cov15() const
     {
       Mat15 cov;
-      cov.block<9, 9>(0, 0) = CovNav();
-      cov.block<9, 6>(0, 9) = Cov_.block<9, 6>(0, 10);
-      cov.block<6, 9>(9, 0) = Cov_.block<6, 9>(10, 0);
-      cov.block<6, 6>(9, 9) = Cov_.block<6, 6>(10, 10);
+      cov.template block<9, 9>(0, 0) = CovNav();
+      cov.template block<9, 6>(0, 9) = Cov_.template block<9, 6>(0, 10);
+      cov.template block<6, 9>(9, 0) = Cov_.template block<6, 9>(10, 0);
+      cov.template block<6, 6>(9, 9) = Cov_.template block<6, 6>(10, 10);
       return cov;
     }
     const Mat18 Cov18() const
     {
       Mat18 cov;
-      cov.block<9, 9>(0, 0) = CovNav();
-      cov.block<9, 9>(0, 9) = Cov_.block<9, 9>(0, 10);
-      cov.block<9, 9>(9, 0) = Cov_.block<9, 9>(10, 0);
-      cov.block<9, 9>(9, 9) = Cov_.block<9, 9>(10, 10);
+      cov.template block<9, 9>(0, 0) = CovNav();
+      cov.template block<9, 9>(0, 9) = Cov_.template block<9, 9>(0, 10);
+      cov.template block<9, 9>(9, 0) = Cov_.template block<9, 9>(10, 0);
+      cov.template block<9, 9>(9, 9) = Cov_.template block<9, 9>(10, 10);
       return cov;
     }
     const Gal3 Gamma_ij() const
     {
-      double dt = deltaTij();
+      FPType dt = deltaTij();
       Mat5 Gamma = Mat5::Identity();
-      Gamma.block<3, 1>(0, 3) = p_->getGravity() * dt;
-      Gamma.block<3, 1>(0, 4) = -0.5 * p_->getGravity() * dt * dt;
+      Gamma.template block<3, 1>(0, 3) = p_->getGravity() * dt;
+      Gamma.template block<3, 1>(0, 4) = -0.5 * p_->getGravity() * dt * dt;
       Gamma(3, 4) = -dt;
       return Gal3(Gamma);
     }
     const Gal3 invGamma_ij() const
     {
-      double dt = deltaTij();
+      FPType dt = deltaTij();
       Mat5 invGamma = Mat5::Identity();
-      invGamma.block<3, 1>(0, 3) = -p_->getGravity() * dt;
-      invGamma.block<3, 1>(0, 4) = -0.5 * p_->getGravity() * dt * dt;
+      invGamma.template block<3, 1>(0, 3) = -p_->getGravity() * dt;
+      invGamma.template block<3, 1>(0, 4) = -0.5 * p_->getGravity() * dt * dt;
       invGamma(3, 4) = dt;
       return Gal3(invGamma);
     }
@@ -209,7 +205,7 @@ namespace preintegration
      * @param dt The time step duration.
      * @return The updated Tangent Group element.
      */
-    const Gal3TG Lambda(const State &xi, const Input &u, double dt) const
+    const Gal3TG Lambda(const State &xi, const Input &u, FPType dt) const
     {
       Gal3 Lambda1 = Gal3::exp((u.w() - xi.bias()) * dt);
       Vec10 Lambda2 = xi.bias() - Lambda1.Adjoint() * (xi.bias() + u.tau() * dt);
@@ -253,7 +249,7 @@ namespace preintegration
      * @param gyroMeas Measured angular velocity (gyroscope reading).
      * @param dt Time step duration.
      */
-    void integrateMeasurement(const Vec3 &accMeas, const Vec3 &gyroMeas, const double dt)
+    void integrateMeasurement(const Vec3 &accMeas, const Vec3 &gyroMeas, const FPType dt)
     {
       Input u(gyroMeas, accMeas);
       Mat10 K =
@@ -265,21 +261,39 @@ namespace preintegration
 
       // Propagate covariance
       Mat20 A = Mat20::Identity();
-      A.topRightCorner<10, 10>() = Gal3::leftJacobian(u0.w() * dt) * dt;
-      A.bottomRightCorner<10, 10>() = Gal3::exp(u0.w() * dt).Adjoint();
+      A.template topRightCorner<10, 10>() = Gal3::leftJacobian(u0.w() * dt) * dt;
+      A.template bottomRightCorner<10, 10>() = Gal3::exp(u0.w() * dt).Adjoint();
 
       Mat20 B = Mat20::Zero();
-      B.topLeftCorner<10, 10>() = K;
-      B.bottomRightCorner<10, 10>() = -xi().Upsilon().Adjoint() * dt;
+      B.template topLeftCorner<10, 10>() = K;
+      B.template bottomRightCorner<10, 10>() = -xi().Upsilon().Adjoint() * dt;
 
       Cov_ = A * Cov_ * A.transpose() + B * (p_->Qc() / dt) * B.transpose();
 
       // Propagate state Jacobian wrt bias
       Mat20 Phi_b = Mat20::Identity();
-      Phi_b.topRightCorner<10, 10>() = -K;
+      Phi_b.template topRightCorner<10, 10>() = -K;
 
       Jxi_ = Phi_b * Jxi_;
     }
+
+  private:
+    std::shared_ptr<Params> p_;
+
+    // Initial bias estimate used for preintegration
+    Vec10 biasHat_;
+
+    // State origin (Identity element)
+    State xi0_;
+
+    // Preintegration from i to j as a Tangent Group element
+    Gal3TG X_;
+
+    // Jacobian of the state with respect to the bias (used for bias update)
+    Mat20 Jxi_;
+
+    // Covariance matrix for the preintegrated measurements
+    Mat20 Cov_;
   };
 
 } // namespace preintegration
