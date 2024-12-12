@@ -20,22 +20,6 @@ block that can be leveraged in different optimization-based Inertial Navigation 
 ## Installation
 
 This is a header-only C++ library meant to be used within other projects. Either copy the content of `include` folder within the external project's `include` folder or use cmake's `FetchContent_Declare` as follows
-```
-FetchContent_Declare(
-    EquivariantPreintegration
-    GIT_REPOSITORY  https://github.com/aau-cns/equivariant-preintegration
-    GIT_TAG         main
-    GIT_SHALLOW     TRUE
-    GIT_PROGRESS    TRUE
-)
-list(APPEND external EquivariantPreintegration) 
-list(APPEND include_dirs ${EQUIVARIANTPREINTEGRATION_INCLUDE_DIR})
-list(APPEND libs EquivariantPreintegration)
-```
-```markdown
-## Installation
-
-This is a header-only C++ library meant to be used within other projects. Either copy the content of `include` folder within the external project's `include` folder or use cmake's `FetchContent_Declare` as follows:
 ```cmake
 FetchContent_Declare(
     EquivariantPreintegration
