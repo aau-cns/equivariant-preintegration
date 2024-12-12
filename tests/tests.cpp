@@ -1,4 +1,4 @@
-// Copyright (C) 2023 Alessandro Fornasier, Pieter van Goor.
+// Copyright (C) 2024 Giulio Delama.
 // Control of Networked Systems, University of Klagenfurt, Austria.
 // System Theory and Robotics Lab, Australian Centre for Robotic
 // Vision, Australian national University, Australia.
@@ -9,8 +9,7 @@
 // no commercial use allowed, the full terms of which are made available
 // in the LICENSE file. No license in patents is granted.
 //
-// You can contact the authors at <alessandro.fornasier@ieee.org>,
-// <pieter.vangoor@anu.edu.au>.
+// You can contact the authors at <giulio.delama@ieee.org>.
 
 #include <cstdlib>
 #include <ctime>
