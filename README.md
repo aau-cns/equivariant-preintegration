@@ -44,7 +44,12 @@ int main() {
     using namespace preintegration;
 
     // Define the parameters
-    std::shared_ptr<PreintegrationParams<double>> params = std::make_shared<PreintegrationParams<double>>(Eigen::Vector3d::UnitZ() * -9.81, 1e-4, 1e-3, 1e-6, 1e-5);
+    std::shared_ptr<PreintegrationParams<double>> params = std::make_shared<PreintegrationParams<double>>();
+    params->setGravity(Eigen::Vector3d::UnitZ() * -9.81);
+    params->setGyroNoiseSigma(1e-4);
+    params->setAccNoiseSigma(1e-3);
+    params->setGyroBiasNoiseSigma(1e-6);
+    params->setAccBiasNoiseSigma(1e-5);
 
     // Initialize the preintegration object
     EquivariantPreintegration<double> pim(params);
