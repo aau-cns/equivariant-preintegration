@@ -29,8 +29,8 @@ FetchContent_Declare(
     GIT_PROGRESS    TRUE
 )
 list(APPEND external EquivariantPreintegration) 
-list(APPEND include_dirs ${EQUIVARIANT_PREINTEGRATION_INCLUDE_DIR})
-list(APPEND libs EquivariantPreintegration Eigen3::Eigen)
+list(APPEND include_dirs ${EQUIVARIANTPREINTEGRATION_INCLUDE_DIR})
+list(APPEND libs EquivariantPreintegration)
 ```
 ## Usage
 To use the Equivariant Preintegration library in your project, include the `preintegration.hpp` header from the `include` directory. Here is a sample usage in a test file:

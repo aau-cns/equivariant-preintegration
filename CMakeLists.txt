@@ -13,7 +13,7 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Set options
-option(BUILD_TESTS "Build equivariant-preintegration tests" OFF)
+option(BUILD_TESTS "Build EquivariantPreintegration tests" OFF)
 option(ENABLE_ADDRESS_SANITIZER "Enable address sanitizer" OFF)
 option(ENABLE_UNDEFINED_SANITIZER "Enable undefined behavior sanitizer" ON)
 
@@ -61,7 +61,7 @@ FetchContent_Declare(
 )
 list(APPEND external LiePlusPlus) 
 list(APPEND include_dirs ${LIEPLUSPLUS_INCLUDE_DIR})
-list(APPEND libs LiePlusPlus Eigen3::Eigen)
+list(APPEND libs LiePlusPlus)
 
 FetchContent_MakeAvailable(${external})
 
