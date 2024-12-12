@@ -32,6 +32,31 @@ list(APPEND external EquivariantPreintegration)
 list(APPEND include_dirs ${EQUIVARIANTPREINTEGRATION_INCLUDE_DIR})
 list(APPEND libs EquivariantPreintegration)
 ```
+```markdown
+## Installation
+
+This is a header-only C++ library meant to be used within other projects. Either copy the content of `include` folder within the external project's `include` folder or use cmake's `FetchContent_Declare` as follows:
+```cmake
+FetchContent_Declare(
+    EquivariantPreintegration
+    GIT_REPOSITORY  https://github.com/aau-cns/equivariant-preintegration
+    GIT_TAG         main
+    GIT_SHALLOW     TRUE
+    GIT_PROGRESS    TRUE
+)
+list(APPEND external EquivariantPreintegration) 
+list(APPEND include_dirs ${EQUIVARIANTPREINTEGRATION_INCLUDE_DIR})
+list(APPEND libs EquivariantPreintegration)
+```
+Alternatively, if you want to clone the repository and do a local build, follow these steps:
+```sh
+git clone https://github.com/aau-cns/equivariant-preintegration.git
+cd equivariant-preintegration
+mkdir build && cd build
+cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=True
+cmake --build .
+```
+
 ## Usage
 To use the Equivariant Preintegration library in your project, include the `preintegration.hpp` header from the `include` directory. Here is a sample usage in a test file:
 
