@@ -17,7 +17,7 @@ Maintainer: [Giulio Delama](mailto:giulio.delama@aau.at)
 
 This is a header-only C++ library for equivariant Inertial Measurement Unit (IMU) preintegration, a fundamental building
 block that can be leveraged in different optimization-based Inertial Navigation System (INS) localization solutions.
-By utilizing an equivariant symmetry, our method geometrically couples navigation states and biases, leading to reduced errors and improved consistency compared to existing state-of-the-art techniques ([paper](10.1109/LRA.2024.3511424)).
+By utilizing an equivariant symmetry, our method geometrically couples navigation states and biases, leading to reduced errors and improved consistency compared to existing state-of-the-art techniques ([paper](https://ieeexplore.ieee.org/document/10777045)).
 
 ## Dependencies
 
