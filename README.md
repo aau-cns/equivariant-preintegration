@@ -6,6 +6,7 @@
 Maintainer: [Giulio Delama](mailto:giulio.delama@aau.at)
 
 - [Description](#description)
+- [Dependencies](#dependencies)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Credit](#credit)
@@ -14,8 +15,17 @@ Maintainer: [Giulio Delama](mailto:giulio.delama@aau.at)
 
 ## Description
 
-This is a header-only C++ library based on Eigen for equivariant Inertial Measurement Unit (IMU) preintegration, a fundamental building
+This is a header-only C++ library for equivariant Inertial Measurement Unit (IMU) preintegration, a fundamental building
 block that can be leveraged in different optimization-based Inertial Navigation System (INS) localization solutions.
+By utilizing an equivariant symmetry, our method geometrically couples navigation states and biases, leading to reduced errors and improved consistency compared to existing state-of-the-art techniques ([paper](10.1109/LRA.2024.3511424)).
+
+## Dependencies
+
+The library has the following dependencies which are automatically downloaded and linked against:
+
+- [Eigen](https://gitlab.com/libeigen/eigen.git)
+- [Lie++](https://github.com/aau-cns/Lie-plusplus)
+- [googletest](https://github.com/google/googletest.git)
 
 ## Installation
 
