@@ -110,10 +110,12 @@ If you use this software in an academic research setting, please cite the corres
 ```latex
 @ARTICLE{10777045,
   author={Delama, Giulio and Fornasier, Alessandro and Mahony, Robert and Weiss, Stephan},
-  journal={IEEE Robotics and Automation Letters},
-  title={Equivariant IMU Preintegration with Biases:a Galilean Group Approach},
-  year={2024},
-  pages={1-8},
-  keywords={Lie groups;Navigation;Manifolds;Filtering theory;Vectors;Location awareness;Algebra;Accuracy;Libraries;Kalman filters;Localization;Sensor Fusion;SLAM},
+  journal={IEEE Robotics and Automation Letters}, 
+  title={Equivariant IMU Preintegration With Biases: A Galilean Group Approach}, 
+  year={2025},
+  volume={10},
+  number={1},
+  pages={724-731},
+  keywords={Lie groups;Navigation;Manifolds;Filtering theory;Vectors;Location awareness;Algebra;Accuracy;Libraries;Kalman filters;Localization;sensor fusion;SLAM},
   doi={10.1109/LRA.2024.3511424}}
 ```
