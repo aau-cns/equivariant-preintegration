@@ -65,26 +65,36 @@ namespace test
         MatrixEquality(pim.p().getGravity(), TypeParam::Vec3::UnitZ() * -9.81);
         ScalarEquality(pim.p().getGyroNoiseSigma(), 1);
         ScalarEquality(pim.p().getAccNoiseSigma(), 1);
+        ScalarEquality(pim.p().getVirtualVelNoiseSigma(), 0);
+        ScalarEquality(pim.p().getVirtualTimeScaleNoiseSigma(), 0);
         ScalarEquality(pim.p().getGyroBiasNoiseSigma(), 1);
         ScalarEquality(pim.p().getAccBiasNoiseSigma(), 1);
+        ScalarEquality(pim.p().getVirtualVelBiasNoiseSigma(), 0);
+        ScalarEquality(pim.p().getVirtualTimeScaleBiasNoiseSigma(), 0);
         MatrixEquality(pim.p().getInitCov(), TypeParam::Mat20::Zero());
         MatrixEquality(pim.p().Qc(), Qc);
       }
       {
-        std::shared_ptr<typename TypeParam::Params> p = std::make_shared<typename TypeParam::Params>(TypeParam::Vec3::UnitZ() * -9.81, 1e-4, 1e-3, 1e-6, 1e-5);
+        std::shared_ptr<typename TypeParam::Params> p = std::make_shared<typename TypeParam::Params>(TypeParam::Vec3::UnitZ() * -9.81, 1e-4, 1e-3, 1e-8, 1e-10, 1e-6, 1e-5, 1e-7, 1e-8);
         TypeParam pim = TypeParam(p);
         typename TypeParam::Mat20 Qc = TypeParam::Mat20::Identity();
         Qc.template block<3, 3>(0, 0) *= 1e-4 * 1e-4;
         Qc.template block<3, 3>(3, 3) *= 1e-3 * 1e-3;
-        Qc.template block<4, 4>(6, 6) *= 0;
+        Qc.template block<3, 3>(6, 6) *= 1e-8 * 1e-8;
+        Qc.template block<1, 1>(9, 9) *= 1e-10 * 1e-10;
         Qc.template block<3, 3>(10, 10) *= 1e-6 * 1e-6;
         Qc.template block<3, 3>(13, 13) *= 1e-5 * 1e-5;
-        Qc.template block<4, 4>(16, 16) *= 0;
+        Qc.template block<3, 3>(16, 16) *= 1e-7 * 1e-7;
+        Qc.template block<1, 1>(19, 19) *= 1e-8 * 1e-8;
         MatrixEquality(pim.p().getGravity(), TypeParam::Vec3::UnitZ() * -9.81);
         ScalarEquality(pim.p().getGyroNoiseSigma(), 1e-4);
         ScalarEquality(pim.p().getAccNoiseSigma(), 1e-3);
+        ScalarEquality(pim.p().getVirtualVelNoiseSigma(), 1e-8);
+        ScalarEquality(pim.p().getVirtualTimeScaleNoiseSigma(), 1e-10);
         ScalarEquality(pim.p().getGyroBiasNoiseSigma(), 1e-6);
         ScalarEquality(pim.p().getAccBiasNoiseSigma(), 1e-5);
+        ScalarEquality(pim.p().getVirtualVelBiasNoiseSigma(), 1e-7);
+        ScalarEquality(pim.p().getVirtualTimeScaleBiasNoiseSigma(), 1e-8);
         MatrixEquality(pim.p().getInitCov(), TypeParam::Mat20::Zero());
         MatrixEquality(pim.p().Qc(), Qc);
       }
@@ -128,7 +138,7 @@ namespace test
       typename TypeParam::Scalar dt = 0.01;
       std::vector<typename TypeParam::Vec3> accs = utils::randomAcc<typename TypeParam::Scalar>(-10, 10, n);
       std::vector<typename TypeParam::Vec3> gyros = utils::randomGyro<typename TypeParam::Scalar>(-1, 1, n);
-      std::shared_ptr<typename TypeParam::Params> p = std::make_shared<typename TypeParam::Params>(TypeParam::Vec3::UnitZ() * -9.81, 1e-4, 1e-3, 1e-6, 1e-5);
+      std::shared_ptr<typename TypeParam::Params> p = std::make_shared<typename TypeParam::Params>(TypeParam::Vec3::UnitZ() * -9.81, 1e-4, 1e-3, 1e-8, 1e-10, 1e-6, 1e-5, 1e-7, 1e-8);
       TypeParam pim = TypeParam(p);
       group::Gal3<typename TypeParam::Scalar> Upsilon = group::Gal3<typename TypeParam::Scalar>();
       typename TypeParam::Mat20 A = TypeParam::Mat20::Identity();

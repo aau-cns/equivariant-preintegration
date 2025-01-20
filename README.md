@@ -8,6 +8,7 @@ Maintainer: [Giulio Delama](mailto:giulio.delama@aau.at)
 - [Description](#description)
 - [Dependencies](#dependencies)
 - [Installation](#installation)
+  * [Run Tests](#tests)
 - [Usage](#usage)
 - [Credit](#credit)
   * [License](#license)
@@ -50,6 +51,13 @@ mkdir build && cd build
 cmake ../ -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=True
 cmake --build .
 ```
+
+### Tests
+If you have built the library with `-DBUILD_TESTS=True`, you can execute the unit tests by running the following command inside the build directory:
+```sh
+./equivariant_preintegration_tests
+```
+
 
 ## Usage
 To use the Equivariant Preintegration library in your project, include the `preintegration.hpp` header from the `include` directory. Here is a sample usage in a test file:

@@ -41,21 +41,33 @@ namespace preintegration
      * @param gravity Gravity vector (default: -9.81 in the Z direction).
      * @param gyroNoiseSigma Gyroscope noise sigma (default: 1).
      * @param accNoiseSigma Accelerometer noise sigma (default: 1).
+     * @param virtualVelNoiseSigma Virtual Velocity noise sigma (default: 0).
+     * @param virtualTimeScaleNoiseSigma Virtual Time Scale noise sigma (default: 0).
      * @param gyroBiasNoiseSigma Gyroscope bias noise sigma (default: 1).
      * @param accBiasNoiseSigma Accelerometer bias noise sigma (default: 1).
-     * @param initCov Initial state covariance matrix (default: zero matrix).
+     * @param virtualVelBiasNoiseSigma Virtual Velocity bias noise sigma (default: 0).
+     * @param virtualTimeScaleBiasNoiseSigma Virtual Time Scale bias noise sigma (default: 0).
+     * @param initCov Initial state covariance matrix (default: zero 20x20 matrix).
      */
     PreintegrationParams(Vec3 gravity = Vec3::UnitZ() * -9.81,
                          FPType gyroNoiseSigma = 1,
                          FPType accNoiseSigma = 1,
+                         FPType virtualVelNoiseSigma = 0,
+                         FPType virtualTimeScaleNoiseSigma = 0,
                          FPType gyroBiasNoiseSigma = 1,
                          FPType accBiasNoiseSigma = 1,
+                         FPType virtualVelBiasNoiseSigma = 0,
+                         FPType virtualTimeScaleBiasNoiseSigma = 0,
                          Mat20 initCov = Mat20::Zero())
         : gravity_(gravity),
           gyroNoiseSigma_(gyroNoiseSigma),
           accNoiseSigma_(accNoiseSigma),
+          virtualVelNoiseSigma_(virtualVelNoiseSigma),
+          virtualTimeScaleNoiseSigma_(virtualTimeScaleNoiseSigma),
           gyroBiasNoiseSigma_(gyroBiasNoiseSigma),
           accBiasNoiseSigma_(accBiasNoiseSigma),
+          virtualVelBiasNoiseSigma_(virtualVelBiasNoiseSigma),
+          virtualTimeScaleBiasNoiseSigma_(virtualTimeScaleBiasNoiseSigma),
           initCov_(initCov) {}
 
     /**
@@ -101,6 +113,34 @@ namespace preintegration
     void setAccNoiseSigma(FPType sigma) { accNoiseSigma_ = sigma; }
 
     /**
+     * @brief Get the virtual velocity noise sigma.
+     *
+     * @return Virtual velocity noise sigma.
+     */
+    FPType getVirtualVelNoiseSigma() const { return virtualVelNoiseSigma_; }
+
+    /**
+     * @brief Set the virtual velocity noise sigma.
+     *
+     * @param sigma Virtual velocity noise sigma to set.
+     */
+    void setVirtualVelNoiseSigma(FPType sigma) { virtualVelNoiseSigma_ = sigma; }
+
+    /**
+     * @brief Get the virtual time scale noise sigma.
+     *
+     * @return Virtual time scale noise sigma.
+     */
+    FPType getVirtualTimeScaleNoiseSigma() const { return virtualTimeScaleNoiseSigma_; }
+
+    /**
+     * @brief Set the virtual time scale noise sigma.
+     *
+     * @param sigma Virtual time scale noise sigma to set.
+     */
+    void setVirtualTimeScaleNoiseSigma(FPType sigma) { virtualTimeScaleNoiseSigma_ = sigma; }
+
+    /**
      * @brief Get the gyroscope bias noise sigma.
      *
      * @return Gyroscope bias noise sigma.
@@ -129,6 +169,34 @@ namespace preintegration
     void setAccBiasNoiseSigma(FPType sigma) { accBiasNoiseSigma_ = sigma; }
 
     /**
+     * @brief Get the virtual velocity bias noise sigma.
+     *
+     * @return Virtual velocity bias noise sigma.
+     */
+    FPType getVirtualVelBiasNoiseSigma() const { return virtualVelBiasNoiseSigma_; }
+
+    /**
+     * @brief Set the virtual velocity bias noise sigma.
+     *
+     * @param sigma Virtual velocity bias noise sigma to set.
+     */
+    void setVirtualVelBiasNoiseSigma(FPType sigma) { virtualVelBiasNoiseSigma_ = sigma; }
+
+    /**
+     * @brief Get the virtual time scale bias noise sigma.
+     *
+     * @return Virtual time scale bias noise sigma.
+     */
+    FPType getVirtualTimeScaleBiasNoiseSigma() const { return virtualTimeScaleBiasNoiseSigma_; }
+
+    /**
+     * @brief Set the virtual time scale bias noise sigma.
+     *
+     * @param sigma Virtual time scale bias noise sigma to set.
+     */
+    void setVirtualTimeScaleBiasNoiseSigma(FPType sigma) { virtualTimeScaleBiasNoiseSigma_ = sigma; }
+
+    /**
      * @brief Get the initial state covariance matrix.
      *
      * @return Initial state covariance matrix.
@@ -152,10 +220,12 @@ namespace preintegration
       Mat20 Qc = Mat20::Identity();
       Qc.template block<3, 3>(0, 0) *= gyroNoiseSigma_ * gyroNoiseSigma_;
       Qc.template block<3, 3>(3, 3) *= accNoiseSigma_ * accNoiseSigma_;
-      Qc.template block<4, 4>(6, 6) *= 0;
+      Qc.template block<3, 3>(6, 6) *= virtualVelNoiseSigma_ * virtualVelNoiseSigma_;
+      Qc.template block<1, 1>(9, 9) *= virtualTimeScaleNoiseSigma_ * virtualTimeScaleNoiseSigma_;
       Qc.template block<3, 3>(10, 10) *= gyroBiasNoiseSigma_ * gyroBiasNoiseSigma_;
       Qc.template block<3, 3>(13, 13) *= accBiasNoiseSigma_ * accBiasNoiseSigma_;
-      Qc.template block<4, 4>(16, 16) *= 0;
+      Qc.template block<3, 3>(16, 16) *= virtualVelBiasNoiseSigma_ * virtualVelBiasNoiseSigma_;
+      Qc.template block<1, 1>(19, 19) *= virtualTimeScaleBiasNoiseSigma_ * virtualTimeScaleBiasNoiseSigma_;
       return Qc;
     }
 
@@ -176,6 +246,16 @@ namespace preintegration
     FPType accNoiseSigma_;
 
     /**
+     * @brief Continuous time virtual velocity noise sigma.
+     */
+    FPType virtualVelNoiseSigma_;
+
+    /**
+     * @brief Continuous time virtual time scale noise sigma.
+     */
+    FPType virtualTimeScaleNoiseSigma_;
+
+    /**
      * @brief Continuous time gyroscope bias random walk sigma.
      */
     FPType gyroBiasNoiseSigma_;
@@ -184,6 +264,16 @@ namespace preintegration
      * @brief Continuous time accelerometer bias random walk sigma.
      */
     FPType accBiasNoiseSigma_;
+
+    /**
+     * @brief Continuous time virtual velocity bias random walk sigma.
+     */
+    FPType virtualVelBiasNoiseSigma_;
+
+    /**
+     * @brief Continuous time virtual time scale bias random walk sigma.
+     */
+    FPType virtualTimeScaleBiasNoiseSigma_;
 
     /**
      * @brief Initial state covariance matrix.
