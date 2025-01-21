@@ -265,8 +265,8 @@ namespace preintegration
       A.template bottomRightCorner<10, 10>() = Gal3::exp(u0.w() * dt).Adjoint();
 
       Mat20 B = Mat20::Zero();
-      B.template topLeftCorner<10, 10>() = K;
-      B.template bottomRightCorner<10, 10>() = -xi().Upsilon().Adjoint() * dt;
+      B.template topLeftCorner<10, 10>() = -K;
+      B.template bottomRightCorner<10, 10>() = xi().Upsilon().Adjoint() * dt;
 
       Cov_ = A * Cov_ * A.transpose() + B * (p_->Qc() / dt) * B.transpose();
 
